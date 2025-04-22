@@ -40,8 +40,8 @@ On your docker hosts, create a macvlan network with a name of your choosing. I'm
 This will create a docker network that will persist across reboots. It's probably best you check the [documentation](https://docs.docker.com/engine/network/drivers/macvlan/) instead of blindly following what I type. The above command will most likely not work for you.
 
 Now we have the macvlan created on both docker hosts, we need to deploy KeepaliveD and ensure everything's working. Here's the compose file:
-
-`services:
+```
+services:
   keepalived_dns1:
     image: osixia/keepalived:2.0.20
     container_name: keepalived_dns1
@@ -72,7 +72,8 @@ Now we have the macvlan created on both docker hosts, we need to deploy Keepaliv
       - KEEPALIVED_PASSWORD=put_something_random_here
 networks:
   vlan15:
-    external: true`
+    external: true
+```
 
 A quick rundown of what this is going to do:
 1. It'll create a keepalived instance on the IP of 10.15.0.181
@@ -93,7 +94,8 @@ Give it a moment and you'll notice both IPs are responding to ping.
 
 Now, on your second host, run the very similar docker-compose.yaml
 
-`services:
+```
+services:
   keepalived_dns2:
     image: osixia/keepalived:2.0.20
     container_name: keepalived_dns2
@@ -124,7 +126,8 @@ Now, on your second host, run the very similar docker-compose.yaml
       - KEEPALIVED_PASSWORD=put_something_random_here
 networks:
   vlan15:
-    external: true`
+    external: true
+```
 
 Before executing this, open yet another terminal and get a persistent ping up on 10.15.0.182, then run docker compose up -d
 
@@ -138,7 +141,8 @@ All you need to do now is deploy the adguardhome containers inside the compose s
 
 Host1:
 
-`services:
+```
+services:
   keepalived_dns1:
     image: osixia/keepalived:2.0.20
     container_name: keepalived_dns1
@@ -179,11 +183,13 @@ Host1:
       - /share/Docker/adguardhome/conf:/opt/adguardhome/work
 networks:
   vlan15:
-    external: true`
+    external: true
+```
 
 Host2:
 
-`services:
+```
+services:
   keepalived_dns2:
     image: osixia/keepalived:2.0.20
     container_name: keepalived_dns2
@@ -224,7 +230,8 @@ Host2:
       - /share/Docker/adguardhome/work:/opt/adguardhome/work
 networks:
   vlan15:
-    external: true`
+    external: true
+```
 
 And spin them both up.
 
@@ -235,7 +242,8 @@ Once you've setup the admin account on both instances, log onto the primary inst
 
 Once you're done there, you can then deploy adguardhome-sync and ensure that the config from the master instance replicated to the backup instance.
 
-`services:
+```
+services:
   adguardhome-sync:
     image: ghcr.io/bakito/adguardhome-sync
     container_name: adguardhome-sync
@@ -272,7 +280,8 @@ Once you're done there, you can then deploy adguardhome-sync and ensure that the
       FEATURES_THEME: "true"
 networks:
   vlan15:
-    external: true`
+    external: true
+```
 
 Just spin that up with your frieldnly `docker compose up -d` command.
 
